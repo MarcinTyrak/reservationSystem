@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" th:href="@{/img/favicon.ico}">
+    <link rel="icon" type="image/png" th:href="@{/img/favicon.ico}">
+    <title>Adding reservation</title>
+    <!--     Fonts and icons     -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet"/>
+    <!-- Nucleo Icons -->
+    <link th:href="@{/css/nucleo-icons.css}" rel="stylesheet"/>
+    <link th:href="@{/css/nucleo-svg.css}" rel="stylesheet"/>
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/b854f570bb.js" crossorigin="anonymous"></script>
+    <link th:href="@{/css/nucleo-svg.css}" rel="stylesheet"/>
+    <!-- CSS Files -->
+    <link id="pagestyle" th:href="@{/css/argon-dashboard.css?v=2.0.4}" rel="stylesheet"/>
+
+    <!--Datepicker-->
+    <!-- Popperjs -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+    <!-- Tempus Dominus JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+    <!-- Tempus Dominus Styles -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
+</head>
+
+<body class="g-sidenav-show bg-gray-100">
+<div class="min-height-300 bg-primary position-absolute w-100"></div>
+<div th:replace="~{fragments/menu :: menu}"></div>
+
+<main class="main-content position-relative border-radius-lg ">
+    <!-- Navbar -->
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur"
+         data-scroll="false">
+        <div class="container-fluid py-1 px-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+                    <li class="breadcrumb-item text-sm"></li>
+                    <li class="breadcrumb-item text-sm text-white active" aria-current="page">reservations</li>
+                    <li class="breadcrumb-item text-sm text-white active" aria-current="page">add new</li>
+                </ol>
+            </nav>
+        </div>
+    </nav>
+    <!-- End Navbar -->
+    <div class="container-fluid py-4">
+        <div class="row justify-content-center mt-6">
+            <div class="col-10">
+                <div class="card mb-4">
+                    <div class="card-header pb-0">
+                        <h6>Add reservation</h6>
+                    </div>
+                    <div class="card-body px-0 pt-0 pb-3">
+                        <div class="table-responsive p-0">
+                            <form role="form" th:action="@{/reservations/add(loggedId=${logged.id})}" method="post" th:object="${reservation}" style="width: 98%;">
+                                <input id="id" type="number" th:field="*{id}" class="visually-hidden" readonly>
+                                <input id="employee" type="text" th:field="*{employee}" class="visually-hidden" readonly>
+                                <div class="input-group m-3">
+                                    <div class="input-group-prepend w-15" style="min-width: 8rem">
+                                        <span class="input-group-text">Subject:</span>
+                                    </div>
+                                    <input id="subject" type="text" th:field="*{subject}" class="form-control"/>
+                                </div>
+                                <div class="input-group m-3">
+                                    <div class="input-group-prepend w-15" style="min-width: 8rem">
+                                        <span class="input-group-text">Information:</span>
+                                    </div>
+                                    <textarea id="information" type="text" th:field="*{information}" class="form-control" style="height: 41px"></textarea>
+                                </div>
+                                <div id="input-date" class="input-group m-3">
+                                    <div class="input-group-prepend w-15" style="min-width: 8rem">
+                                        <span class="input-group-text">Date:</span>
+                                    </div>
+                                    <input id="date" type="text" th:field="*{date}" class="form-control" data-td-target="#dateTimePicker"/>
+                                    <span class="input-group-text" data-td-target="#dateTimePicker" data-td-toggle="datetimepicker">
+                                        <span class="fas fa-calendar"></span>
+                                    </span>
+                                </div>
+                                <div class="input-group m-3">
+                                    <div class="input-group-prepend w-15" style="min-width: 8rem">
+                                        <span class="input-group-text">Duration [hours / minutes]:</span>
+                                    </div>
+                                    <input id="durationHour" class="form-control" type="number" min="0" max="24" step="1" th:field="*{durationHour}" placeholder="Hour"/>
+                                    <input id="durationMinutes" class="form-control" type="number" min="5" max="60" step="5" th:field="*{durationMinutes}" placeholder="Minutes"/>
+                                </div>
+                                <div class="input-group m-3">
+                                    <div class="input-group-prepend w-15" style="min-width: 8rem">
+                                        <span class="input-group-text">Room:</span>
+                                    </div>
+                                    <select th:field="*{room}" class="form-control" id="rooms">
+                                        <option class="italic" value="0">--select--</option>
+                                        <option th:each="r : ${allRooms}"
+                                                th:text="${r.name}"
+                                                th:value="${r.id}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="input-group m-3">
+                                    <div class="input-group-prepend w-15" style="min-width: 8rem">
+                                        <span class="input-group-text">Additions:</span>
+                                    </div>
+                                    <div class="form-control" id="additions">
+                                        <input type="checkbox" name="additions" class="mx-2"
+                                               th:each="addition : ${additions}"
+                                               th:text="${addition.name}"
+                                               th:value="${addition.id}"
+                                               th:field="*{additions}"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-start m-3 text-center">
+                                    <button type="submit" class="btn btn-lg btn-info">
+                                        Add
+                                    </button>
+                                </div>
+                            </form>
+                            <div class="d-flex justify-content-end me-3">
+                                <div th:if="${msgOK != null}" class="alert alert-success text-center font-weight-bold"
+                                     role="alert">
+                                    <span th:text="${msgOK}"></span>
+                                </div>
+                                <div th:if="${msgErr != null}" class="alert alert-danger text-center font-weight-bold"
+                                     role="alert">
+                                    <span th:text="${msgErr}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:replace="~{fragments/footer :: footer}"></div>
+    </div>
+</main>
+
+
+<!--   Core JS Files   -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script> <!--Datepicker-->
+<script th:src="@{/js/core/popper.min.js}"></script>
+<script th:src="@{/js/core/bootstrap.min.js}"></script>
+<script th:src="@{/js/plugins/perfect-scrollbar.min.js}"></script>
+<script th:src="@{/js/plugins/smooth-scrollbar.min.js}"></script>
+<script th:src="@{/js/plugins/chartjs.min.js}"></script>
+
+<script>
+	var win = navigator.platform.indexOf('Win') > -1;
+	if (win && document.querySelector('#sidenav-scrollbar')) {
+		var options = {
+			damping: '0.5'
+		}
+		Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+	}
+</script>
+<!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+<script th:src="@{/js/argon-dashboard.min.js?v=2.0.4}"></script>
+
+<!--Datepicker-->
+<script>
+	const localization = {
+		locale: 'pl',
+		startOfTheWeek: 1,
+		today: 'Dziś',
+		clear: 'Wyczyść',
+		close: 'Zamknij',
+		selectMonth: 'Wybierz miesiąc',
+		previousMonth: 'Poprzedni miesiąc',
+		nextMonth: 'Następny miesiąc',
+		selectYear: 'Wybierz rok',
+		previousYear: 'Poprzedni rok',
+		nextYear: 'Następny rok',
+		pickHour: 'Wybierz godzinę',
+		incrementHour: 'Zwiększ godzinę',
+		decrementHour: 'Zmniejsz godzinę',
+		pickMinute: 'Wybierz minutę',
+		incrementMinute: 'Zwiększ minutę',
+		decrementMinute: 'Zmniejsz minutę',
+		selectTime: 'Wybierz czas',
+		selectDate: 'Wybierz datę',
+	}
+
+	// data czas
+	new tempusDominus.TempusDominus(document.getElementById('input-date'), {
+		localization: {
+			...localization,
+			dayViewHeaderFormat: { month: 'long', year: '2-digit' },
+			format: 'dd.MM.yyyy, HH:mm',
+		},
+		display: {
+			sideBySide: true,
+			buttons: {
+				today: true,
+				clear: true,
+				close: true
+			},
+			components: {
+				useTwentyfourHour: true
+			},
+		},
+		stepping: 5,
+		allowInputToggle: false,
+	});
+</script>
+
+</body>
+</html>
